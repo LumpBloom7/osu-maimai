@@ -27,10 +27,12 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
         public bool[] PointInteractionState = new bool[11];
 
         private HitExplosion explosion;
-        private TouchBody touchBody;
+        public TouchBody TouchBody;
 
         private SentakkiInputManager sentakkiActionInputManager;
         internal SentakkiInputManager SentakkiActionInputManager => sentakkiActionInputManager ??= GetContainingInputManager() as SentakkiInputManager;
+
+        private readonly IBindable<Vector2> positionBindable = new Bindable<Vector2>();
 
         public DrawableTouch() : this(null) { }
         public DrawableTouch(Touch hitObject)
@@ -46,7 +48,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             Anchor = Anchor.Centre;
             Alpha = 0;
             AddRangeInternal(new Drawable[]{
-                touchBody = new TouchBody(),
+                TouchBody = new TouchBody(),
                 explosion = new HitExplosion()
             });
 
@@ -62,17 +64,20 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             {
                 explosion.Colour = c.NewValue;
             }, true);
+
+            positionBindable.BindValueChanged(p => Position = p.NewValue);
         }
 
         protected override void OnApply()
         {
             base.OnApply();
-            Position = HitObject.Position;
+            positionBindable.BindTo(HitObject.PositionBindable);
         }
 
         protected override void OnFree()
         {
             base.OnFree();
+            positionBindable.UnbindFrom(HitObject.PositionBindable);
             for (int i = 0; i < 11; ++i)
                 PointInteractionState[i] = false;
         }
@@ -89,8 +94,8 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
 
             using (BeginDelayedSequence(AdjustedAnimationDuration, true))
             {
-                touchBody.ResizeTo(90, moveTo, Easing.InCirc);
-                touchBody.BorderContainer.Delay(moveTo).FadeIn();
+                TouchBody.ResizeTo(90, moveTo, Easing.InCirc);
+                TouchBody.BorderContainer.Delay(moveTo).FadeIn();
             }
         }
 
@@ -129,7 +134,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             {
                 case ArmedState.Hit:
                     explosion.Explode();
-                    touchBody.FadeOut();
+                    TouchBody.FadeOut();
                     this.Delay(time_fade_hit).Expire();
 
                     break;

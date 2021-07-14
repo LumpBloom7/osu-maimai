@@ -85,5 +85,19 @@ namespace osu.Game.Rulesets.Sentakki
                     return result.GetDescription();
             }
         }
+
+        public static int GetNoteLaneFromDegrees(this float degrees)
+        {
+            if (degrees < 0) degrees += 360;
+            if (degrees >= 360) degrees %= 360;
+            int result = 0;
+
+            for (int i = 0; i < SentakkiPlayfield.LANEANGLES.Length; ++i)
+            {
+                if (SentakkiPlayfield.LANEANGLES[i] - degrees >= -22.5f && SentakkiPlayfield.LANEANGLES[i] - degrees <= 22.5f)
+                    result = i;
+            }
+            return result;
+        }
     }
 }

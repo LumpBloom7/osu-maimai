@@ -38,7 +38,8 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
                 note.SecondStar.Alpha = 0;
 
             double spinDuration = ((Slide)parentSlide.HitObject).SlideInfoList.FirstOrDefault().Duration;
-            note.Stars.Spin(spinDuration, RotationDirection.Counterclockwise, 0).Loop();
+            if (spinDuration != 0)
+                note.Stars.Spin(spinDuration, RotationDirection.Counterclockwise, 0).Loop();
         }
     }
 }

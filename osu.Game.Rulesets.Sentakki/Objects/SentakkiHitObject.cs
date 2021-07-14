@@ -6,16 +6,25 @@ using osu.Framework.Extensions.Color4Extensions;
 using osu.Game.Audio;
 using osu.Game.Rulesets.Judgements;
 using osu.Game.Rulesets.Objects;
+using osu.Game.Rulesets.Objects.Types;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Sentakki.Judgements;
 using osu.Game.Rulesets.Sentakki.Scoring;
 using osu.Game.Utils;
+using osuTK;
 using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Sentakki.Objects
 {
-    public abstract class SentakkiHitObject : HitObject
+    public abstract class SentakkiHitObject : HitObject, IHasPosition
     {
+        // TODO:
+        // No-op IHasPosition properties are added to allow work on editor. Remove ASAP
+
+        public virtual Vector2 Position { get; set; }
+        public float X => Position.X;
+        public float Y => Position.Y;
+
         public SentakkiHitObject()
         {
             // We initialize the note colour to the default value first for test scenes

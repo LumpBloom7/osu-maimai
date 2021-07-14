@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using osu.Game.Rulesets.Objects;
 using osuTK;
@@ -20,18 +21,17 @@ namespace osu.Game.Rulesets.Sentakki.Objects
 
         public readonly SliderPath[] SlideSegments;
 
+        public readonly IReadOnlyList<Vector2> Vertices;
+
         public SentakkiSlidePath(SliderPath segment, int endLane)
-        {
-            SlideSegments = new SliderPath[] { segment };
-            TotalDistance = SlideSegments.Sum(p => p.Distance);
-            EndLane = endLane;
-        }
+            : this(new SliderPath[] { segment }, endLane) { }
 
         public SentakkiSlidePath(SliderPath[] segments, int endLane)
         {
             SlideSegments = segments;
             TotalDistance = SlideSegments.Sum(p => p.Distance);
             EndLane = endLane;
+            Vertices = SlideSegments.SelectMany(getVerticesOfPath).ToList();
         }
 
         public Vector2 PositionAt(double progress)
@@ -48,6 +48,14 @@ namespace osu.Game.Rulesets.Sentakki.Objects
             }
 
             return SlideSegments[i].PositionAt(distanceLeft / SlideSegments[i].Distance);
+        }
+
+        private List<Vector2> getVerticesOfPath(SliderPath path)
+        {
+            var vertices = new List<Vector2>();
+
+            path.GetPathToProgress(vertices, 0, 1);
+            return vertices;
         }
     }
 }

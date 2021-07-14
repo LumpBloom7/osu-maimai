@@ -25,9 +25,9 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
         private SentakkiInputManager sentakkiActionInputManager;
         internal SentakkiInputManager SentakkiActionInputManager => sentakkiActionInputManager ??= GetContainingInputManager() as SentakkiInputManager;
 
-        public override bool ReceivePositionalInputAt(Vector2 screenSpacePos) => touchHoldBody.ReceivePositionalInputAt(screenSpacePos);
+        public override bool ReceivePositionalInputAt(Vector2 screenSpacePos) => TouchHoldBody.ReceivePositionalInputAt(screenSpacePos);
 
-        private TouchHoldBody touchHoldBody;
+        public TouchHoldBody TouchHoldBody;
 
         private PausableSkinnableSound holdSample;
 
@@ -46,7 +46,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             Scale = new Vector2(0f);
             Alpha = 0;
             AddRangeInternal(new Drawable[] {
-                touchHoldBody = new TouchHoldBody(),
+                TouchHoldBody = new TouchHoldBody(),
                 holdSample = new PausableSkinnableSound
                 {
                     Volume = { Value = 0 },
@@ -91,7 +91,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             base.OnFree();
 
             holdSample.Samples = null;
-            holdStartTime = null;
+            isHitting.Value = false;
             totalHoldTime = 0;
         }
 
@@ -102,7 +102,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
             this.FadeInFromZero(fadeIn).ScaleTo(1, fadeIn);
             using (BeginDelayedSequence(fadeIn, true))
             {
-                touchHoldBody.ProgressPiece.TransformBindableTo(touchHoldBody.ProgressPiece.ProgressBindable, 1, ((IHasDuration)HitObject).Duration);
+                TouchHoldBody.ProgressPiece.TransformBindableTo(TouchHoldBody.ProgressPiece.ProgressBindable, 1, ((IHasDuration)HitObject).Duration);
             }
         }
 
@@ -141,7 +141,7 @@ namespace osu.Game.Rulesets.Sentakki.Objects.Drawables
                             && Time.Current <= HitObject.GetEndTime()
                             && (Auto || checkForTouchInput() || ((SentakkiActionInputManager?.PressedActions.Any() ?? false) && IsHovered));
 
-            if (isHitting.Value)
+            if (holdSample != null && isHitting.Value)
                 holdSample.Frequency.Value = 0.5 + ((Time.Current - holdStartTime.Value + totalHoldTime) / ((IHasDuration)HitObject).Duration);
         }
 

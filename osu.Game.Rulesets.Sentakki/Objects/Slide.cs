@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,7 +16,8 @@ namespace osu.Game.Rulesets.Sentakki.Objects
         public double Duration
         {
             get => SlideInfoList.Any() ? SlideInfoList.Max(s => s.Duration) : 0;
-            set => throw new NotSupportedException();
+            // The editor only allows the modification of the first slide body
+            set => SlideInfoList.First().Duration = value;
         }
 
         public List<IList<HitSampleInfo>> NodeSamples = new List<IList<HitSampleInfo>>();
